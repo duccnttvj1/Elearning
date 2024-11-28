@@ -1,0 +1,54 @@
+USE qlct;
+SELECT * FROM qlct.architect;
+SELECT * FROM qlct.building;
+SELECT * FROM qlct.contractor;
+
+DELIMITER $$
+CREATE PROCEDURE getAllMaleArchitect()
+BEGIN
+	SELECT * FROM qlct.architect
+	WHERE sex = 1;
+END $$
+DELIMITER ;
+
+CALL getAllMaleArchitect();
+
+-- tạo 1 thủ tục lấy toàn bộ thông tin về các building được thiết kế
+-- bởi các kiến trúc sư nữ (0)
+-- (architect, design, building)
+
+-- USER-defined variable (Biến người dùng)
+SET @gender =1; 
+
+SELECT @gender;
+
+DELIMITER $$
+CREATE PROCEDURE getAllBuildingDesignByAllFemale()
+BEGIN
+	SET @scope = 1;
+	SELECT b.* 
+	FROM design d JOIN building b ON b.id = d.building_id
+				JOIN architect a ON d.architect_id = a.id 
+	WHERE a.sex= @gender;
+END $$
+DELIMITER ;
+
+SELECT @scope;
+
+CALL getAllBuildingDesignByAllFemale();
+-- Viết thủ tục tính tổng toàn bộ benefit mà architect
+-- name (1) đã kiếm 
+-- Tạo 1 biến local variable có giá trị = với giới tính nam (1)
+
+DELIMITER $$
+CREATE PROCEDURE getAllBenefitByFemale()
+BEGIN
+	DECLARE gender int DEFAULT 0 ;
+	SELECT SUM(benefit) 
+	FROM design d JOIN architect a ON d.architect_id = a.id
+	WHERE a.sex = gender;
+END$$
+DELIMITER ;
+
+CALL getAllBenefitByFemale();
+
